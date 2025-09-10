@@ -3,7 +3,7 @@
 
 class APIClient {
     constructor() {
-        this.baseURL = 'http://localhost:5001/api';
+        this.baseURL = 'https://rx-academy-backend-101.onrender.com/api';
         this.token = this.getStoredToken();
         this.refreshToken = this.getStoredRefreshToken();
     }
