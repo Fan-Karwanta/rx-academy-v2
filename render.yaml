@@ -1,0 +1,82 @@
+services:
+  # Backend API Service
+  - type: web
+    name: rx-magazine-api
+    env: node
+    plan: starter
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://rxacademy_user:rxacademy101@rxacademycluster.u1l2en5.mongodb.net/?retryWrites=true&w=majority&appName=rxacademycluster
+      - key: DB_NAME
+        value: rx_magazine
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_EMAIL
+        value: rx@admin
+      - key: ADMIN_PASSWORD
+        value: rxacademy2025
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: rx-magazine-frontend
+          property: host
+      - key: ADMIN_PANEL_URL
+        fromService:
+          type: web
+          name: rx-magazine-admin
+          property: host
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+
+  # Frontend PWA Service
+  - type: web
+    name: rx-magazine-frontend
+    env: static
+    plan: starter
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: rx-magazine-api
+          property: host
+      - key: VITE_NODE_ENV
+        value: production
+
+  # Admin Panel Service
+  - type: web
+    name: rx-magazine-admin
+    env: static
+    plan: starter
+    buildCommand: cd admin_panel && npm install && npm run build
+    staticPublishPath: ./admin_panel/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: rx-magazine-api
+          property: host
+      - key: VITE_API_URL_PROD
+        fromService:
+          type: web
+          name: rx-magazine-api
+          property: host
+      - key: VITE_ADMIN_EMAIL
+        value: rx@admin
+      - key: VITE_ADMIN_PASSWORD
+        value: rxacademy2025
+      - key: VITE_NODE_ENV
+        value: production

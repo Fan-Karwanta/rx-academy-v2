@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f4641a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="RX Lifestyle">
+    
+    <link rel="shortcut icon" href="Complan/favicons_folder/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="Complan/favicons_folder/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Complan/favicons_folder/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="Complan/favicons_folder/apple-touch-icon.png" />
+    
+    <title>RX Lifestyle - Admin Panel</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Calibri', Arial, sans-serif;
+            background: linear-gradient(135deg, #f4641a 0%, #ff8c42 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .admin-badge {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .tab-button.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .users-table th,
+        .users-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .users-table th {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: rgba(40, 167, 69, 0.8);
+            color: white;
+        }
+        
+        .status-inactive {
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin: 0 5px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .action-btn.danger {
+            background: rgba(220, 53, 69, 0.8);
+            border-color: rgba(220, 53, 69, 0.5);
+        }
+        
+        .action-btn.success {
+            background: rgba(40, 167, 69, 0.8);
+            border-color: rgba(40, 167, 69, 0.5);
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loader-content {
+            text-align: center;
+            color: #ffffff;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.8;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                border-radius: 10px;
+                margin: 2px;
+            }
+            
+            .users-table {
+                font-size: 0.9rem;
+            }
+            
+            .users-table th,
+            .users-table td {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">RX LIFESTYLE ADMIN</div>
+        <div class="admin-badge">Admin Panel</div>
+        <div class="nav-buttons">
+            <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            <button class="nav-btn" onclick="handleLogout()">Sign Out</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-title">Admin Dashboard</div>
+        <div class="page-subtitle">Manage users, subscriptions, and content</div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-users">-</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="active-subscriptions">-</div>
+                <div class="stat-label">Active Subscriptions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="monthly-revenue">-</div>
+                <div class="stat-label">Monthly Revenue</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="new-users">-</div>
+                <div class="stat-label">New Users (30d)</div>
+            </div>
+        </div>
+        
+        <div class="admin-tabs">
+            <button class="tab-button active" onclick="switchTab('users')">User Management</button>
+            <button class="tab-button" onclick="switchTab('subscriptions')">Subscriptions</button>
+            <button class="tab-button" onclick="switchTab('content')">Content Access</button>
+            <button class="tab-button" onclick="switchTab('analytics')">Analytics</button>
+        </div>
+        
+        <!-- Users Tab -->
+        <div id="users-tab" class="tab-content active">
+            <input type="text" class="search-bar" placeholder="Search users by name or email..." id="user-search">
+            <div style="overflow-x: auto;">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Subscription</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <h3>Loading users...</h3>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Subscriptions Tab -->
+        <div id="subscriptions-tab" class="tab-content">
+            <input type="text" class="search-bar" placeholder="Search subscriptions..." id="subscription-search">
+            <div style="overflow-x: auto;">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Started</th>
+                            <th>Expires</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subscriptions-tbody">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <h3>Loading subscriptions...</h3>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Content Access Tab -->
+        <div id="content-tab" class="tab-content">
+            <div class="empty-state">
+                <h3>Content Access Management</h3>
+                <p>Grant or revoke access to specific content for users</p>
+                <button class="action-btn success" onclick="alert('Feature coming soon!')">
+                    Manage Content Access
+                </button>
+            </div>
+        </div>
+        
+        <!-- Analytics Tab -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="empty-state">
+                <h3>Analytics Dashboard</h3>
+                <p>View detailed analytics and reports</p>
+                <button class="action-btn success" onclick="alert('Feature coming soon!')">
+                    View Analytics
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="auth-loader" class="loader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <div class="loader-text">Loading...</div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { auth, db, utils, supabase } from './js/supabase-client.js';
+        
+        let currentUser = null;
+        let allUsers = [];
+        let allSubscriptions = [];
+        
+        // Initialize admin panel
+        async function initAdmin() {
+            utils.showLoading('Loading admin panel...');
+            
+            try {
+                // Check authentication
+                const session = await auth.getSession();
+                if (!session) {
+                    window.location.href = 'auth.html';
+                    return;
+                }
+                
+                currentUser = session.user;
+                
+                // Check admin permissions (for demo, we'll allow all authenticated users)
+                // In production, you would check against admin_users table
+                
+                // Load data
+                await loadDashboardStats();
+                await loadUsers();
+                await loadSubscriptions();
+                
+            } catch (error) {
+                console.error('Admin initialization error:', error);
+                utils.showError('Failed to load admin panel. Please try again.');
+            } finally {
+                utils.hideLoading();
+            }
+        }
+        
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                // For demo purposes, we'll show mock data
+                // In production, you would query your database
+                
+                document.getElementById('total-users').textContent = '1,234';
+                document.getElementById('active-subscriptions').textContent = '456';
+                document.getElementById('monthly-revenue').textContent = '$4,560';
+                document.getElementById('new-users').textContent = '89';
+                
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        // Load users
+        async function loadUsers() {
+            try {
+                // For demo purposes, we'll show mock data
+                // In production, you would query profiles table
+                
+                const mockUsers = [
+                    {
+                        id: '1',
+                        full_name: 'John Doe',
+                        email: 'john@example.com',
+                        subscription_tier: 'premium',
+                        subscription_status: 'active',
+                        created_at: '2024-01-15'
+                    },
+                    {
+                        id: '2',
+                        full_name: 'Jane Smith',
+                        email: 'jane@example.com',
+                        subscription_tier: 'free',
+                        subscription_status: 'inactive',
+                        created_at: '2024-02-20'
+                    },
+                    {
+                        id: '3',
+                        full_name: 'Admin User',
+                        email: currentUser.email,
+                        subscription_tier: 'enterprise',
+                        subscription_status: 'active',
+                        created_at: '2024-01-01'
+                    }
+                ];
+                
+                allUsers = mockUsers;
+                displayUsers(allUsers);
+                
+            } catch (error) {
+                console.error('Failed to load users:', error);
+                document.getElementById('users-tbody').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <h3>Failed to load users</h3>
+                            <p>Please try again later</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Display users in table
+        function displayUsers(users) {
+            const tbody = document.getElementById('users-tbody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <h3>No users found</h3>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.full_name || 'N/A'}</td>
+                    <td>${user.email}</td>
+                    <td>${user.subscription_tier}</td>
+                    <td>
+                        <span class="status-badge status-${user.subscription_status}">
+                            ${user.subscription_status}
+                        </span>
+                    </td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewUser('${user.id}')">View</button>
+                        <button class="action-btn success" onclick="grantAccess('${user.id}')">Grant Access</button>
+                        <button class="action-btn danger" onclick="suspendUser('${user.id}')">Suspend</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Load subscriptions
+        async function loadSubscriptions() {
+            try {
+                // Mock subscription data
+                const mockSubscriptions = [
+                    {
+                        id: '1',
+                        user_email: 'john@example.com',
+                        plan_id: 'premium_monthly',
+                        status: 'active',
+                        created_at: '2024-01-15',
+                        current_period_end: '2024-12-15'
+                    },
+                    {
+                        id: '2',
+                        user_email: currentUser.email,
+                        plan_id: 'enterprise_monthly',
+                        status: 'active',
+                        created_at: '2024-01-01',
+                        current_period_end: '2024-12-01'
+                    }
+                ];
+                
+                allSubscriptions = mockSubscriptions;
+                displaySubscriptions(allSubscriptions);
+                
+            } catch (error) {
+                console.error('Failed to load subscriptions:', error);
+            }
+        }
+        
+        // Display subscriptions
+        function displaySubscriptions(subscriptions) {
+            const tbody = document.getElementById('subscriptions-tbody');
+            
+            if (subscriptions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <h3>No subscriptions found</h3>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = subscriptions.map(sub => `
+                <tr>
+                    <td>${sub.user_email}</td>
+                    <td>${sub.plan_id.replace('_', ' ').toUpperCase()}</td>
+                    <td>
+                        <span class="status-badge status-${sub.status}">
+                            ${sub.status}
+                        </span>
+                    </td>
+                    <td>${new Date(sub.created_at).toLocaleDateString()}</td>
+                    <td>${new Date(sub.current_period_end).toLocaleDateString()}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewSubscription('${sub.id}')">View</button>
+                        <button class="action-btn danger" onclick="cancelSubscription('${sub.id}')">Cancel</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Tab switching
+        window.switchTab = function(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        };
+        
+        // Search functionality
+        document.getElementById('user-search').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredUsers = allUsers.filter(user => 
+                user.full_name?.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
+            );
+            displayUsers(filteredUsers);
+        });
+        
+        document.getElementById('subscription-search').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredSubs = allSubscriptions.filter(sub => 
+                sub.user_email.toLowerCase().includes(searchTerm) ||
+                sub.plan_id.toLowerCase().includes(searchTerm)
+            );
+            displaySubscriptions(filteredSubs);
+        });
+        
+        // Admin actions
+        window.viewUser = function(userId) {
+            alert(`Viewing user ${userId} - Feature coming soon!`);
+        };
+        
+        window.grantAccess = function(userId) {
+            if (confirm('Grant premium access to this user?')) {
+                alert(`Access granted to user ${userId} - Feature coming soon!`);
+            }
+        };
+        
+        window.suspendUser = function(userId) {
+            if (confirm('Are you sure you want to suspend this user?')) {
+                alert(`User ${userId} suspended - Feature coming soon!`);
+            }
+        };
+        
+        window.viewSubscription = function(subId) {
+            alert(`Viewing subscription ${subId} - Feature coming soon!`);
+        };
+        
+        window.cancelSubscription = function(subId) {
+            if (confirm('Are you sure you want to cancel this subscription?')) {
+                alert(`Subscription ${subId} cancelled - Feature coming soon!`);
+            }
+        };
+        
+        // Handle logout
+        window.handleLogout = async function() {
+            if (confirm('Are you sure you want to sign out?')) {
+                utils.showLoading('Signing out...');
+                
+                const result = await auth.signOut();
+                
+                if (result.success) {
+                    window.location.href = 'auth.html';
+                } else {
+                    utils.hideLoading();
+                    utils.showError('Failed to sign out. Please try again.');
+                }
+            }
+        };
+        
+        // Initialize on page load
+        window.addEventListener('load', initAdmin);
+    </script>
+</body>
+</html>

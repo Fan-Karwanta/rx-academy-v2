@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f4641a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="RX Lifestyle">
+    
+    <link rel="shortcut icon" href="Complan/favicons_folder/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="Complan/favicons_folder/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Complan/favicons_folder/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="Complan/favicons_folder/apple-touch-icon.png" />
+    
+    <title>RX Lifestyle - Dashboard</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Calibri', Arial, sans-serif;
+            background: linear-gradient(135deg, #f4641a 0%, #ff8c42 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-name {
+            font-weight: bold;
+        }
+        
+        .subscription-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .subscription-free {
+            background: rgba(220, 53, 69, 0.8);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+        
+        .subscription-premium {
+            background: rgba(40, 167, 69, 0.8);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .subscription-status {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        
+        .upgrade-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .upgrade-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            color: #ffffff;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .upgrade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .magazines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+        
+        .magazine-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+        }
+        
+        .magazine-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .magazine-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .magazine-card.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .magazine-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+        }
+        
+        .magazine-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+        
+        .magazine-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .magazine-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .magazine-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .magazine-card:hover .magazine-button {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loader-content {
+            text-align: center;
+            color: #ffffff;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .welcome-title {
+                font-size: 2rem;
+            }
+            
+            .magazines-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .magazine-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">RX LIFESTYLE</div>
+        <div class="user-info">
+            <span class="user-name" id="user-name">Loading...</span>
+            <span class="subscription-badge" id="subscription-badge">Loading...</span>
+            <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome-section">
+            <div class="welcome-title">Welcome to Your Dashboard</div>
+            <div class="welcome-subtitle">Access your premium RX Lifestyle content</div>
+        </div>
+        
+        <div class="subscription-status" id="subscription-status">
+            <!-- Dynamic content will be loaded here -->
+        </div>
+        
+        <div class="magazines-grid">
+            <div class="magazine-card" id="complan-card" onclick="accessMagazine('complan')">
+                <div class="magazine-icon">
+                    <img src="Complan/favicons_folder/android-chrome-192x192.png" alt="RX Compensation Plan">
+                </div>
+                <div class="magazine-title">RX Compensation Plan</div>
+                <div class="magazine-description">
+                    Explore our comprehensive compensation plan and discover the opportunities available in the RX Lifestyle community.
+                </div>
+                <div class="magazine-button">Open Compensation Plan</div>
+            </div>
+            
+            <div class="magazine-card" id="products-card" onclick="accessMagazine('products')">
+                <div class="magazine-icon">
+                    <img src="Products/favicons_folder/android-chrome-192x192.png" alt="RX Products">
+                </div>
+                <div class="magazine-title">RX Products</div>
+                <div class="magazine-description">
+                    Discover our premium product line featuring Rexovit Advance and other health solutions.
+                </div>
+                <div class="magazine-button">View Products</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="auth-loader" class="loader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <div class="loader-text">Loading...</div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import apiClient, { utils } from './js/api-client.js';
+        
+        let currentUser = null;
+        let userProfile = null;
+        let userSubscription = null;
+        
+        // Initialize dashboard
+        async function initDashboard() {
+            utils.showLoading('Loading your dashboard...');
+            
+            try {
+                // First check if user is authenticated
+                if (!apiClient.isAuthenticated()) {
+                    console.log('User not authenticated, redirecting to auth');
+                    window.location.replace('auth.html');
+                    return;
+                }
+                
+                // Try to get cached user data first for faster loading
+                let cachedUser = apiClient.getCachedUser();
+                if (cachedUser) {
+                    currentUser = cachedUser;
+                    console.log('Using cached user data:', currentUser);
+                    
+                    // Update UI immediately with cached data
+                    updateUserInfo();
+                    updateSubscriptionStatus();
+                    updateMagazineAccess();
+                    utils.hideLoading();
+                    
+                    // Then refresh data in background
+                    refreshUserData();
+                    return;
+                }
+                
+                // If no cached data, fetch from server
+                await loadUserData();
+                
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+                // If authentication fails, redirect to auth
+                apiClient.clearTokens();
+                window.location.replace('auth.html');
+            }
+        }
+        
+        // Load user data from server
+        async function loadUserData() {
+            try {
+                const session = await apiClient.getSession();
+                
+                if (!session || !session.user) {
+                    throw new Error('Invalid session');
+                }
+                
+                currentUser = session.user;
+                console.log('User data loaded from server:', currentUser);
+                
+                // Load additional data
+                await loadAdditionalData();
+                
+                // Update UI
+                updateUserInfo();
+                updateSubscriptionStatus();
+                updateMagazineAccess();
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                throw error;
+            } finally {
+                utils.hideLoading();
+            }
+        }
+        
+        // Load additional user data (profile, subscription)
+        async function loadAdditionalData() {
+            try {
+                // Load user profile
+                const profileResult = await apiClient.getProfile(currentUser.id);
+                userProfile = profileResult.success ? profileResult.data : currentUser;
+                
+                // Load subscription with fallback
+                try {
+                    userSubscription = await apiClient.getSubscription(currentUser.id);
+                } catch (subError) {
+                    console.log('Subscription load failed, using defaults');
+                    userSubscription = {
+                        status: currentUser.subscriptionStatus || 'inactive',
+                        plan_id: currentUser.subscriptionTier || 'free'
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading additional data:', error);
+                // Use current user data as fallback
+                userProfile = currentUser;
+                userSubscription = {
+                    status: currentUser.subscriptionStatus || 'inactive',
+                    plan_id: currentUser.subscriptionTier || 'free'
+                };
+            }
+        }
+        
+        // Refresh user data in background
+        async function refreshUserData() {
+            try {
+                console.log('Refreshing user data in background...');
+                const session = await apiClient.getSession();
+                if (session && session.user) {
+                    currentUser = session.user;
+                    await loadAdditionalData();
+                    updateUserInfo();
+                    updateSubscriptionStatus();
+                    updateMagazineAccess();
+                }
+            } catch (error) {
+                console.log('Background refresh failed:', error);
+            }
+        }
+        
+        
+        // Update user info in header
+        function updateUserInfo() {
+            const userName = document.getElementById('user-name');
+            const subscriptionBadge = document.getElementById('subscription-badge');
+            
+            if (currentUser) {
+                userName.textContent = currentUser.fullName || currentUser.email;
+                
+                // Use current user's subscription data directly
+                const tier = currentUser.subscriptionTier || 'free';
+                subscriptionBadge.textContent = tier.toUpperCase();
+                subscriptionBadge.className = `subscription-badge subscription-${tier}`;
+            }
+        }
+        
+        // Update subscription status section
+        function updateSubscriptionStatus() {
+            const statusSection = document.getElementById('subscription-status');
+            
+            // Check user's subscription status from User model
+            const isSubscribed = currentUser && 
+                                currentUser.subscriptionStatus === 'active' && 
+                                ['premium', 'enterprise'].includes(currentUser.subscriptionTier);
+            
+            console.log('Subscription check:', {
+                subscriptionStatus: currentUser?.subscriptionStatus,
+                subscriptionTier: currentUser?.subscriptionTier,
+                isSubscribed
+            });
+            
+            if (isSubscribed) {
+                statusSection.innerHTML = `
+                    <h2>🎉 Premium Access Active</h2>
+                    <p>You have full access to all RX Lifestyle magazines and exclusive content.</p>
+                    <p><strong>Plan:</strong> ${currentUser.subscriptionTier.toUpperCase()}</p>
+                    <p><strong>Status:</strong> ${currentUser.subscriptionStatus.toUpperCase()}</p>
+                    <p><strong>Member since:</strong> ${new Date(currentUser.createdAt).toLocaleDateString()}</p>
+                `;
+            } else {
+                const statusText = currentUser?.subscriptionStatus === 'active' ? 
+                    'Your account is active but requires premium upgrade' : 
+                    'Contact your administrator to upgrade your account for full access';
+                    
+                statusSection.innerHTML = `
+                    <h2>🔒 ${currentUser?.subscriptionTier === 'free' ? 'Free Account' : 'Limited Access'}</h2>
+                    <p>${statusText} to magazines and exclusive content.</p>
+                    <p><strong>Current Plan:</strong> ${(currentUser?.subscriptionTier || 'free').toUpperCase()}</p>
+                    <p><strong>Status:</strong> ${(currentUser?.subscriptionStatus || 'inactive').toUpperCase()}</p>
+                    <div class="upgrade-section">
+                        <h3>Premium Benefits:</h3>
+                        <ul style="text-align: left; margin: 15px 0;">
+                            <li>✅ Full access to all magazines</li>
+                            <li>✅ Exclusive compensation plan details</li>
+                            <li>✅ Premium product information</li>
+                            <li>✅ Offline access</li>
+                            <li>✅ Priority support</li>
+                        </ul>
+                        <button class="upgrade-btn" onclick="requestAccess()">
+                            Request Premium Access
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update magazine access based on subscription
+        function updateMagazineAccess() {
+            const complanCard = document.getElementById('complan-card');
+            const productsCard = document.getElementById('products-card');
+            
+            // Check if user has premium access
+            const hasAccess = currentUser && 
+                             currentUser.subscriptionStatus === 'active' && 
+                             ['premium', 'enterprise'].includes(currentUser.subscriptionTier);
+            
+            console.log('Magazine access check:', {
+                hasAccess,
+                subscriptionStatus: currentUser?.subscriptionStatus,
+                subscriptionTier: currentUser?.subscriptionTier
+            });
+            
+            if (!hasAccess) {
+                complanCard.classList.add('locked');
+                productsCard.classList.add('locked');
+                
+                // Update button text
+                complanCard.querySelector('.magazine-button').textContent = '🔒 Premium Required';
+                productsCard.querySelector('.magazine-button').textContent = '🔒 Premium Required';
+            } else {
+                complanCard.classList.remove('locked');
+                productsCard.classList.remove('locked');
+                
+                complanCard.querySelector('.magazine-button').textContent = 'Open Compensation Plan';
+                productsCard.querySelector('.magazine-button').textContent = 'View Products';
+            }
+        }
+        
+        // Handle magazine access
+        window.accessMagazine = async function(type) {
+            const hasAccess = currentUser && 
+                             currentUser.subscriptionStatus === 'active' && 
+                             ['premium', 'enterprise'].includes(currentUser.subscriptionTier);
+            
+            if (!hasAccess) {
+                const statusMsg = currentUser?.subscriptionTier === 'free' ? 
+                    'Premium subscription required to view this content. Please contact your administrator to upgrade your account.' : 
+                    'Active subscription required to view this content. Please contact support.';
+                alert(statusMsg);
+                return;
+            }
+            
+            // If user has premium access, allow direct access
+            if (type === 'complan') {
+                window.location.href = 'Complan/index.html';
+            } else if (type === 'products') {
+                window.location.href = 'Products/index.html';
+            }
+        };
+        
+        
+        // Handle logout
+        window.handleLogout = async function() {
+            if (confirm('Are you sure you want to sign out?')) {
+                utils.showLoading('Signing out...');
+                
+                const result = await apiClient.signOut();
+                
+                if (result.success) {
+                    window.location.href = 'auth.html';
+                } else {
+                    utils.hideLoading();
+                    utils.showError('Failed to sign out. Please try again.');
+                }
+            }
+        };
+        
+        // Handle access request
+        window.requestAccess = function() {
+            window.open('https://forms.gle/rxlifestyle-premium-upgrade', '_blank');
+        };
+        
+        // Initialize on page load
+        window.addEventListener('load', initDashboard);
+        
+    </script>
+</body>
+</html>
