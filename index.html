@@ -161,6 +161,30 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
         
+        .install-btn {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            color: #ffffff;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .install-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
         .magazines-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -327,6 +351,11 @@
         <div class="welcome-section">
             <div class="welcome-title">Welcome to Your Dashboard</div>
             <div class="welcome-subtitle">Access your premium RX Lifestyle content</div>
+            
+            <!-- PWA Install Button -->
+            <button id="installButton" class="install-btn" style="display: none;">
+                📱 Install App
+            </button>
         </div>
         
         <div class="subscription-status" id="subscription-status">
@@ -507,6 +536,19 @@
         
         // Initialize on page load
         window.addEventListener('load', initDashboard);
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
         
     </script>
     

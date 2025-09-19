@@ -102,6 +102,14 @@ class APIClient {
             }
             
             const data = await response.json();
+            
+            // If response indicates offline mode, handle gracefully
+            if (data.offline) {
+                this.showOfflineIndicator();
+                return data;
+            }
+            
+            this.hideOfflineIndicator();
             return data;
         } catch (error) {
             console.error('API request failed:', error);
@@ -110,10 +118,42 @@ class APIClient {
                 throw error;
             }
             
+            // Check if we're offline
+            if (!navigator.onLine || error.name === 'TypeError') {
+                this.showOfflineIndicator();
+                return {
+                    success: false,
+                    error: 'You are currently offline. Some features may be limited.',
+                    offline: true
+                };
+            }
+            
             return {
                 success: false,
                 error: 'Network error occurred'
             };
+        }
+    }
+
+    showOfflineIndicator() {
+        let indicator = document.getElementById('offline-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'offline-indicator';
+            indicator.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; background: #ff6b35; color: white; text-align: center; padding: 8px; z-index: 10000; font-size: 14px;">
+                    📡 You're offline - Using cached content
+                </div>
+            `;
+            document.body.appendChild(indicator);
+        }
+        indicator.style.display = 'block';
+    }
+
+    hideOfflineIndicator() {
+        const indicator = document.getElementById('offline-indicator');
+        if (indicator) {
+            indicator.style.display = 'none';
         }
     }
 
@@ -184,11 +224,16 @@ class APIClient {
     // Check if user is authenticated
     async getSession() {
         if (!this.token) {
-            // Try to get cached user data
+            // Try to get cached user data for offline use
             const cachedUser = localStorage.getItem('rx_user_data');
             if (cachedUser) {
                 try {
-                    return { user: JSON.parse(cachedUser) };
+                    const userData = JSON.parse(cachedUser);
+                    // Return cached user data with offline flag
+                    return { 
+                        user: userData,
+                        offline: !navigator.onLine
+                    };
                 } catch (error) {
                     localStorage.removeItem('rx_user_data');
                 }
@@ -205,9 +250,43 @@ class APIClient {
                 }
                 return result.data;
             }
+            
+            // If API call fails but we have cached data, use it
+            if (result.offline) {
+                const cachedUser = localStorage.getItem('rx_user_data');
+                if (cachedUser) {
+                    try {
+                        const userData = JSON.parse(cachedUser);
+                        return { 
+                            user: userData,
+                            offline: true
+                        };
+                    } catch (error) {
+                        localStorage.removeItem('rx_user_data');
+                    }
+                }
+            }
+            
             return null;
         } catch (error) {
             console.error('Session check failed:', error);
+            
+            // If offline or network error, try to use cached data
+            if (!navigator.onLine || error.name === 'TypeError') {
+                const cachedUser = localStorage.getItem('rx_user_data');
+                if (cachedUser) {
+                    try {
+                        const userData = JSON.parse(cachedUser);
+                        return { 
+                            user: userData,
+                            offline: true
+                        };
+                    } catch (error) {
+                        localStorage.removeItem('rx_user_data');
+                    }
+                }
+            }
+            
             // If 401, clear tokens
             if (error.status === 401) {
                 this.clearTokens();
@@ -230,8 +309,42 @@ class APIClient {
 
     // Subscription methods
     async getSubscription(userId) {
-        const result = await this.request('/subscriptions/my-subscriptions');
-        return result.success && result.data.length > 0 ? result.data[0] : null;
+        try {
+            const result = await this.request('/subscriptions/my-subscriptions');
+            if (result.success && result.data.length > 0) {
+                // Cache subscription data
+                localStorage.setItem('rx_subscription_data', JSON.stringify(result.data[0]));
+                return result.data[0];
+            }
+            
+            // If API fails but we have cached data, use it
+            if (result.offline || !navigator.onLine) {
+                const cachedSubscription = localStorage.getItem('rx_subscription_data');
+                if (cachedSubscription) {
+                    try {
+                        return JSON.parse(cachedSubscription);
+                    } catch (error) {
+                        localStorage.removeItem('rx_subscription_data');
+                    }
+                }
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('Get subscription failed:', error);
+            
+            // Try cached data on error
+            const cachedSubscription = localStorage.getItem('rx_subscription_data');
+            if (cachedSubscription) {
+                try {
+                    return JSON.parse(cachedSubscription);
+                } catch (error) {
+                    localStorage.removeItem('rx_subscription_data');
+                }
+            }
+            
+            return null;
+        }
     }
 
     async createSubscription(subscriptionData) {

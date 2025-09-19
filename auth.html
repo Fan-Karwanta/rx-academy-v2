@@ -56,9 +56,9 @@
             text-align: center;
             font-size: 2.5rem;
             font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
             letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
         .tagline {
@@ -246,6 +246,11 @@
             <div class="logo">RX LIFESTYLE</div>
             <div class="tagline">Premium Digital Magazines</div>
             
+            <!-- PWA Install Button -->
+            <button id="installButton" class="install-btn" style="display: none;">
+                📱 Install App
+            </button>
+            
             <!-- Sign In Only - User management handled by admin -->
             
             <div id="auth-error" class="message error"></div>
@@ -268,8 +273,8 @@
             <div class="subscription-info">
                 <h3>🔒 Premium Access Required</h3>
                 <p>Contact your administrator for account access to RX Lifestyle digital magazines, compensation plans, and premium content.</p>
-                <p style="margin-top: 15px;"><strong>Need an account?</strong></p>
-                <a href="https://forms.gle/rxlifestyle-account-request" target="_blank" style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; transition: all 0.3s ease;">Request Access</a>
+                <!--<p style="margin-top: 15px;"><strong>Need an account?</strong></p>
+                <a href="https://forms.gle/rxlifestyle-account-request" target="_blank" style="display: inline-block; margin-top: 10px; padding: 12px 24px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; transition: all 0.3s ease;">Request Access</a>-->
             </div>
         </div>
     </div>
@@ -327,6 +332,22 @@
                 window.location.replace('dashboard.html');
             }
         });
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
+    
+    <!-- PWA Scripts -->
+    <script src="pwa-install.js"></script>
 </body>
 </html>

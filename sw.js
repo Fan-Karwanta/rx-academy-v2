@@ -1,9 +1,14 @@
-const CACHE_NAME = 'rx-lifestyle-v3';
+const CACHE_NAME = 'rx-lifestyle-v4';
 const urlsToCache = [
   './',
   './index.html',
+  './auth.html',
+  './dashboard.html',
+  './admin.html',
+  './subscription.html',
   './manifest.json',
   './pwa-install.js',
+  './js/api-client.js',
   './Complan/index.html',
   './Products/index.html',
   './Complan/manifest.json',
@@ -187,6 +192,46 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
+  const url = new URL(event.request.url);
+  
+  // Handle API requests with network-first strategy
+  if (url.origin.includes('onrender.com') || url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // If successful, cache the response for offline use
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME + '-api').then(cache => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try to serve from cache
+          return caches.match(event.request).then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Return offline fallback for auth endpoints
+            if (url.pathname.includes('/auth/')) {
+              return new Response(JSON.stringify({
+                success: false,
+                error: 'Offline - Please check your connection',
+                offline: true
+              }), {
+                headers: { 'Content-Type': 'application/json' }
+              });
+            }
+            throw new Error('No cached response available');
+          });
+        })
+    );
+    return;
+  }
+
+  // Handle static assets with cache-first strategy
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
@@ -207,16 +252,16 @@ self.addEventListener('fetch', function(event) {
             var responseToCache = response.clone();
 
             // Cache all assets including images, PDFs, and other presentation files
-            const url = event.request.url;
-            if (url.includes('/files/') || 
-                url.includes('/mobile/') || 
-                url.includes('.js') || 
-                url.includes('.css') || 
-                url.includes('.png') || 
-                url.includes('.jpg') || 
-                url.includes('.jpeg') || 
-                url.includes('.pdf') ||
-                url.includes('.html')) {
+            const requestUrl = event.request.url;
+            if (requestUrl.includes('/files/') || 
+                requestUrl.includes('/mobile/') || 
+                requestUrl.includes('.js') || 
+                requestUrl.includes('.css') || 
+                requestUrl.includes('.png') || 
+                requestUrl.includes('.jpg') || 
+                requestUrl.includes('.jpeg') || 
+                requestUrl.includes('.pdf') ||
+                requestUrl.includes('.html')) {
               
               caches.open(CACHE_NAME)
                 .then(function(cache) {
@@ -230,7 +275,13 @@ self.addEventListener('fetch', function(event) {
           // If fetch fails and we're offline, try to return a cached version
           // or a fallback response for essential files
           if (event.request.destination === 'document') {
-            return caches.match('./index.html');
+            // Check if user is authenticated from localStorage
+            return caches.match('./dashboard.html').then(dashboardResponse => {
+              if (dashboardResponse) {
+                return dashboardResponse;
+              }
+              return caches.match('./index.html');
+            });
           }
         });
       })
