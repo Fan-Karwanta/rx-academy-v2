@@ -307,6 +307,23 @@ class APIClient {
         });
     }
 
+    // Change password method
+    async changePassword(currentPassword, newPassword) {
+        try {
+            const result = await this.request('/auth/change-password', {
+                method: 'PUT',
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword
+                })
+            });
+            return result;
+        } catch (error) {
+            console.error('Change password failed:', error);
+            throw error;
+        }
+    }
+
     // Subscription methods
     async getSubscription(userId) {
         try {
