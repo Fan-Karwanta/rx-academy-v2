@@ -3,7 +3,17 @@
 
 class APIClient {
     constructor() {
-        this.baseURL = 'https://rx-academy-backend-101.onrender.com/api';
+        // Automatically detect environment and use appropriate backend URL
+        const isLocalhost = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1' ||
+                           window.location.hostname === '';
+        
+        this.baseURL = isLocalhost 
+            ? 'http://localhost:5001/api'  // Local backend
+            : 'https://rx-academy-backend-101.onrender.com/api';  // Production backend
+            
+        console.log('API Client initialized with baseURL:', this.baseURL);
+        
         this.token = this.getStoredToken();
         this.refreshToken = this.getStoredRefreshToken();
     }
