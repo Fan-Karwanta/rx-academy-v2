@@ -203,6 +203,29 @@ class APIClient {
         return result;
     }
 
+    // Register with payment proof
+    async registerWithPayment(formData) {
+        try {
+            const url = `${this.baseURL}/auth/register-with-payment`;
+            
+            const config = {
+                method: 'POST',
+                body: formData // FormData object, don't set Content-Type header
+            };
+
+            const response = await fetch(url, config);
+            const data = await response.json();
+            
+            return data;
+        } catch (error) {
+            console.error('Registration with payment failed:', error);
+            return {
+                success: false,
+                error: 'Network error occurred'
+            };
+        }
+    }
+
     async signOut() {
         try {
             await this.request('/auth/logout', {

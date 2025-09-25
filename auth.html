@@ -264,6 +264,80 @@
             line-height: 1.5;
         }
         
+        /* Signup Form Styles */
+        .signup-step {
+            display: none;
+        }
+        
+        .signup-step.active {
+            display: block;
+        }
+        
+        .payment-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .qr-code-container {
+            margin-bottom: 15px;
+        }
+        
+        .payment-instructions p {
+            margin: 8px 0;
+            opacity: 0.9;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+        }
+        
+        input[type="file"]::-webkit-file-upload-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 10px;
+            margin: 10px auto;
+            display: block;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-dot.active {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.2);
+        }
+        
         @media (max-width: 480px) {
             .auth-card {
                 padding: 30px 20px;
@@ -297,7 +371,11 @@
                 📱 Install App
             </button>
             
-            <!-- Sign In Only - User management handled by admin -->
+            <!-- Auth Tabs -->
+            <div class="auth-tabs">
+                <button class="tab-button active" onclick="switchTab('signin')">Sign In</button>
+                <button class="tab-button" onclick="switchTab('signup')">Sign Up</button>
+            </div>
             
             <div id="auth-error" class="message error"></div>
             <div id="auth-success" class="message success"></div>
@@ -320,6 +398,77 @@
                 <button type="submit" class="auth-button">Sign In</button>
             </form>
             
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="auth-form" enctype="multipart/form-data">
+                <!-- Step 1: Payment Instructions -->
+                <div id="payment-step" class="signup-step active">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: #ffffff;">Step 1: Payment</h3>
+                    <div class="payment-section">
+                        <div class="qr-code-container">
+                            <img src="qrcode_gcash_payment.png" alt="GCash Payment QR Code" style="width: 200px; height: 200px; margin: 0 auto; display: block; border-radius: 10px;">
+                        </div>
+                        <div class="payment-instructions">
+                            <p style="text-align: center; margin: 15px 0; font-weight: bold;">Scan QR Code to Pay ₱350</p>
+                            <p style="text-align: center; margin: 10px 0; font-size: 0.9rem;">Or send to GCash number:</p>
+                            <p style="text-align: center; font-weight: bold; font-size: 1.1rem; color: #ffffff;">09760557067</p>
+                        </div>
+                    </div>
+                    <button type="button" class="auth-button" onclick="nextStep('upload')">I've Made the Payment</button>
+                </div>
+
+                <!-- Step 2: Upload Payment Proof -->
+                <div id="upload-step" class="signup-step">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: #ffffff;">Step 2: Upload Payment Proof</h3>
+                    <div class="form-group">
+                        <label for="payment-proof">Upload Screenshot of Payment</label>
+                        <input type="file" id="payment-proof" name="paymentProof" accept="image/*" required style="padding: 10px; background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.3); border-radius: 10px; text-align: center;">
+                        <div id="image-preview" style="margin-top: 10px; text-align: center;"></div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="auth-button" style="background: rgba(255,255,255,0.1);" onclick="previousStep('payment')">Back</button>
+                        <button type="button" class="auth-button" onclick="nextStep('details')">Continue</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: User Details -->
+                <div id="details-step" class="signup-step">
+                    <h3 style="text-align: center; margin-bottom: 20px; color: #ffffff;">Step 3: Your Details</h3>
+                    <div class="form-group">
+                        <label for="signup-fullname">Full Name</label>
+                        <input type="text" id="signup-fullname" name="fullName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-mobile">Mobile Number</label>
+                        <input type="tel" id="signup-mobile" name="mobileNumber" placeholder="Enter your mobile number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signup-password" name="password" placeholder="Create a password" required>
+                            <button type="button" onclick="togglePassword('signup-password')" class="password-toggle">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                            <button type="button" onclick="togglePassword('signup-confirm-password')" class="password-toggle">
+                                Show
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="auth-button" style="background: rgba(255,255,255,0.1);" onclick="previousStep('upload')">Back</button>
+                        <button type="submit" class="auth-button">Register</button>
+                    </div>
+                </div>
+            </form>
             
             <div class="subscription-info">
                 <h3>🔒 Premium Access Required</h3>
@@ -356,6 +505,74 @@
                 toggleButton.title = 'Show password';
             }
         };
+
+        // Tab switching functionality
+        window.switchTab = function(tab) {
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+            const tabButtons = document.querySelectorAll('.tab-button');
+
+            // Clear any existing messages
+            document.getElementById('auth-error').style.display = 'none';
+            document.getElementById('auth-success').style.display = 'none';
+
+            if (tab === 'signin') {
+                signinForm.classList.add('active');
+                signupForm.classList.remove('active');
+                tabButtons[0].classList.add('active');
+                tabButtons[1].classList.remove('active');
+            } else {
+                signinForm.classList.remove('active');
+                signupForm.classList.add('active');
+                tabButtons[0].classList.remove('active');
+                tabButtons[1].classList.add('active');
+            }
+        };
+
+        // Signup step navigation
+        window.nextStep = function(step) {
+            const currentStep = document.querySelector('.signup-step.active');
+            const nextStepElement = document.getElementById(step + '-step');
+
+            if (step === 'details') {
+                // Validate file upload
+                const fileInput = document.getElementById('payment-proof');
+                if (!fileInput.files[0]) {
+                    utils.showError('Please upload your payment screenshot first.');
+                    return;
+                }
+            }
+
+            currentStep.classList.remove('active');
+            nextStepElement.classList.add('active');
+        };
+
+        window.previousStep = function(step) {
+            const currentStep = document.querySelector('.signup-step.active');
+            const prevStepElement = document.getElementById(step + '-step');
+
+            currentStep.classList.remove('active');
+            prevStepElement.classList.add('active');
+        };
+
+        // File upload preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('payment-proof');
+            const preview = document.getElementById('image-preview');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            preview.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Payment proof preview">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
         
         // Sign In Form Handler
         document.getElementById('signin-form').addEventListener('submit', async (e) => {
@@ -383,6 +600,76 @@
                 }
             } catch (error) {
                 console.error('Login error:', error);
+                utils.showError('Connection error. Please try again.');
+            } finally {
+                utils.hideLoading();
+            }
+        });
+
+        // Sign Up Form Handler
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            
+            // Get form values
+            const fullName = document.getElementById('signup-fullname').value;
+            const email = document.getElementById('signup-email').value;
+            const mobileNumber = document.getElementById('signup-mobile').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const paymentProof = document.getElementById('payment-proof').files[0];
+            
+            // Validation
+            if (!fullName || !email || !mobileNumber || !password || !confirmPassword) {
+                utils.showError('Please fill in all fields.');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                utils.showError('Passwords do not match.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                utils.showError('Password must be at least 6 characters long.');
+                return;
+            }
+            
+            if (!paymentProof) {
+                utils.showError('Please upload your payment screenshot.');
+                return;
+            }
+            
+            // Append form data
+            formData.append('fullName', fullName);
+            formData.append('email', email);
+            formData.append('mobileNumber', mobileNumber);
+            formData.append('password', password);
+            formData.append('paymentProof', paymentProof);
+            
+            utils.showLoading('Submitting registration...');
+            
+            try {
+                const result = await apiClient.registerWithPayment(formData);
+                
+                if (result.success) {
+                    utils.showSuccess('Registration submitted successfully! Please wait for admin confirmation.');
+                    // Reset form
+                    document.getElementById('signup-form').reset();
+                    document.getElementById('image-preview').innerHTML = '';
+                    // Go back to first step
+                    document.querySelector('.signup-step.active').classList.remove('active');
+                    document.getElementById('payment-step').classList.add('active');
+                    // Switch to signin tab
+                    setTimeout(() => {
+                        switchTab('signin');
+                    }, 3000);
+                } else {
+                    utils.showError(result.message || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
                 utils.showError('Connection error. Please try again.');
             } finally {
                 utils.hideLoading();
