@@ -1,0 +1,64 @@
+# Cache Control Headers for RX Magazine
+# This file ensures proper caching behavior for automatic updates
+
+# HTML files - No cache to ensure updates are received immediately
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# Service Worker - No cache to ensure updates
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# Update Manager - No cache to ensure updates
+/js/update-manager.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# API Client - No cache to ensure updates
+/js/api-client.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
+# Manifest files - Short cache
+/manifest.json
+  Cache-Control: public, max-age=300
+  
+/*/manifest.json
+  Cache-Control: public, max-age=300
+
+# Static assets - Long cache with versioning
+/js/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  
+/css/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images - Long cache
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+  
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+  
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+
+# Magazine assets - Medium cache
+/*/files/*
+  Cache-Control: public, max-age=86400
+  
+/*/mobile/*
+  Cache-Control: public, max-age=86400
+
+# Security headers
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin

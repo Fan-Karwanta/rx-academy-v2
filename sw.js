@@ -1,4 +1,6 @@
-const CACHE_NAME = 'rx-lifestyle-v4';
+const CACHE_NAME = 'rx-lifestyle-v' + Date.now(); // Dynamic cache name for automatic updates
+const STATIC_CACHE = 'rx-lifestyle-static-v5';
+const API_CACHE = 'rx-lifestyle-api-v5';
 const urlsToCache = [
   './',
   './index.html',
@@ -115,12 +117,19 @@ for (let i = 1; i <= 26; i++) {
   urlsToCache.push(`./Products/files/basic-html/page${i}.html`);
 }
 
+// Add update notification functionality
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener('install', function(event) {
   console.log('Service Worker installing...');
   console.log(`Caching ${urlsToCache.length} files for complete offline access`);
   
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then(function(cache) {
         console.log('Opened cache, adding all files...');
         // Cache files in batches to avoid overwhelming the browser
@@ -182,8 +191,14 @@ self.addEventListener('install', function(event) {
             });
           });
         });
-        // Force activation of new service worker
-        self.skipWaiting();
+        // Notify clients about update availability
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'UPDATE_AVAILABLE'
+            });
+          });
+        });
       })
       .catch(err => {
         console.error('Failed to cache files:', err);
@@ -202,7 +217,7 @@ self.addEventListener('fetch', function(event) {
           // If successful, cache the response for offline use
           if (response.ok) {
             const responseClone = response.clone();
-            caches.open(CACHE_NAME + '-api').then(cache => {
+            caches.open(API_CACHE).then(cache => {
               cache.put(event.request, responseClone);
             });
           }
@@ -263,7 +278,7 @@ self.addEventListener('fetch', function(event) {
                 requestUrl.includes('.pdf') ||
                 requestUrl.includes('.html')) {
               
-              caches.open(CACHE_NAME)
+              caches.open(STATIC_CACHE)
                 .then(function(cache) {
                   cache.put(event.request, responseToCache);
                 });
@@ -290,7 +305,7 @@ self.addEventListener('fetch', function(event) {
 
 self.addEventListener('activate', function(event) {
   console.log('Service Worker activating...');
-  var cacheWhitelist = [CACHE_NAME];
+  var cacheWhitelist = [STATIC_CACHE, API_CACHE];
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
