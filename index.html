@@ -46,9 +46,15 @@
         }
         
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-image {
+            height: 50px;
+            width: auto;
+            max-width: 200px;
+            object-fit: contain;
         }
         
         .user-info {
@@ -339,7 +345,9 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">RX LIFESTYLE</div>
+        <div class="logo">
+            <img src="rx_success_logo.png" alt="RX Success Academy" class="logo-image">
+        </div>
         <div class="user-info">
             <span class="user-name" id="user-name">Loading...</span>
             <span class="subscription-badge" id="subscription-badge">Loading...</span>
